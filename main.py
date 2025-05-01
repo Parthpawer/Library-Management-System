@@ -886,9 +886,38 @@ def admin_view_books():
     return render_template('admin_view_books.html', books=books)
 
 
-@app.route('/test')
-def test():
-    return "Successfully tested"
+@app.route('/admin/add_librarian', methods=['GET', 'POST'])
+@login_required
+def add_librarian():
+    if current_user.role != 'admin':
+        flash('Access denied.', 'danger')
+        return redirect(url_for('home'))
+
+    if request.method == 'POST':
+        username = request.form['username']
+        email = request.form['email']
+        password = request.form['password']
+
+        if User.query.filter_by(email=email).first():
+            flash('Email already in use.', 'danger')
+            return redirect(url_for('add_librarian'))
+
+        hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
+        librarian = User(
+            username=username,
+            email=email,
+            password=hashed_password,
+            role='librarian',
+            credits=0  # optional field for consistency
+        )
+        db.session.add(librarian)
+        db.session.commit()
+
+        flash('Librarian added successfully.', 'success')
+        return redirect(url_for('admin_view_users'))
+
+    return render_template('add_librarian.html')
+
 # ---------------------------
 # Application Runner
 # ---------------------------
