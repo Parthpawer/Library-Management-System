@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Borrow History - Copy {{ copy.id }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h3>Borrow History for Copy ID: {{ copy.id }} (Book: {{ copy.book.title }})</h3>
+  <table class="table table-striped mt-3">
+    <thead class="table-light">
+      <tr>
+        <th>User</th>
+        <th>Borrowed On</th>
+        <th>Returned On</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for record in history %}
+        <tr>
+          <td>{{ record.user.username }}</td>
+          <td>{{ record.borrowed_on.strftime('%Y-%m-%d %H:%M') }}</td>
+          <td>
+            {% if record.returned_on %}
+              {{ record.returned_on.strftime('%Y-%m-%d %H:%M') }}
+            {% else %}
+              <span class="text-warning">Not Returned</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="3" class="text-center text-muted">No history found.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <a href="{{ url_for('view_book_librarian', book_id=copy.book.id) }}" class="btn btn-secondary mt-3">Back</a>
+</div>
+{% endblock %}

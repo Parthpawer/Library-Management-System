@@ -85,6 +85,21 @@ class Purchase(db.Model):
     def __repr__(self):
         return f'<Purchase {self.book_title} by {self.user.username}>'
 
+class BorrowHistory(db.Model):
+    __tablename__ = 'borrow_history'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    copy_id = db.Column(db.Integer, db.ForeignKey('uniquebook.id'), nullable=False)
+    borrowed_on = db.Column(db.DateTime, nullable=False)
+    returned_on = db.Column(db.DateTime, nullable=True)
+
+    user = db.relationship('User', backref='borrow_history')
+    copy = db.relationship('UniqueBook', backref='history')
+
+    def __repr__(self):
+        return f"<BorrowHistory user={self.user_id} copy={self.copy_id}>"
+
 # ---------------------
 # Physical Copies Table
 # ---------------------

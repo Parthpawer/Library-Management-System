@@ -10,44 +10,61 @@
 <body>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="{{ url_for('home') }}">Library</a>
-
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav ms-auto">
-
-                    {% if current_user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('user_dashboard') }}">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('my_books') }}">My Books</a>
-                    </li>
-                    <li class="nav-item">
-                        <span class="nav-link active">
-                            Welcome, {{ current_user.username }} ({{ current_user.role.capitalize() }}) | 
-                            Credits: ${{ '%.2f'|format(current_user.credits or 0) }}
-                        </span>
-                        
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
-                    </li>
-                    {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('login') }}">Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('register') }}">Register</a>
-                    </li>
-                    {% endif %}
-
-
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="{{ url_for('home') }}">Library</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          {% if current_user.is_authenticated %}
+            {% if current_user.role == 'user' %}
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('user_dashboard') }}">Dashboard</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('my_books') }}">My Books</a>
+              </li>
+            {% elif current_user.role == 'librarian' %}
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('librarian_dashboard') }}">Dashboard</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('view_available_books') }}">Books</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('add_book') }}">Add Book</a>
+              </li>
+              
+            {% elif current_user.role == 'admin' %}
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+              </li>
+            {% endif %}
+  
+            <li class="nav-item">
+              <span class="navbar-text mx-2">
+                Welcome, {{ current_user.username }} ({{ current_user.role|capitalize }})
+                {% if current_user.role == 'user' %}
+                  | Credits: ${{ '%.2f' | format(current_user.credits) }}
+                {% endif %}
+              </span>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+            </li>
+          {% else %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('register') }}">Register</a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+  
 
 
     <!-- Flash Messages -->

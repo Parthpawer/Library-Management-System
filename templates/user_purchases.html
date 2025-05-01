@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}{{ user.username }}'s Purchases{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h3>Purchase History for {{ user.username }}</h3>
+  <table class="table table-bordered mt-4">
+    <thead class="table-light">
+      <tr>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Price Paid</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for purchase in purchases %}
+        <tr>
+          <td>{{ purchase.book_title }}</td>
+          <td>{{ purchase.book_author }}</td>
+          <td>${{ '%.2f' | format(purchase.price_paid) }}</td>
+          <td>{{ purchase.bought_on.strftime('%Y-%m-%d %H:%M') }}</td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="4" class="text-center text-muted">No purchases found.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <a href="{{ url_for('download_purchases', user_id=user.id) }}" class="btn btn-outline-success mb-3">
+    Download as CSV
+  </a>
+  
+  <a href="{{ url_for('registered_users') }}" class="btn btn-secondary mt-3">Back</a>
+</div>
+{% endblock %}

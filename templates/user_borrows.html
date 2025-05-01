@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}{{ user.username }}'s Borrow History{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h3>Borrow History for {{ user.username }}</h3>
+  <table class="table table-bordered mt-4">
+    <thead class="table-light">
+      <tr>
+        <th>Copy ID</th>
+        <th>Book Title</th>
+        <th>Borrowed On</th>
+        <th>Returned On</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for record in history %}
+        <tr>
+          <td>{{ record.copy.id }}</td>
+          <td>{{ record.copy.book.title }}</td>
+          <td>{{ record.borrowed_on.strftime('%Y-%m-%d %H:%M') }}</td>
+          <td>
+            {% if record.returned_on %}
+              {{ record.returned_on.strftime('%Y-%m-%d %H:%M') }}
+            {% else %}
+              <span class="text-warning">Not Returned</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="4" class="text-center text-muted">No borrow history found.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <a href="{{ url_for('download_borrows', user_id=user.id) }}" class="btn btn-outline-success mb-3">
+    Download as CSV
+  </a>
+  
+  <a href="{{ url_for('registered_users') }}" class="btn btn-secondary mt-3">Back</a>
+</div>
+{% endblock %}
