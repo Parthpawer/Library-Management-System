@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Registered Users{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4">Registered Users</h2>
+  <table class="table table-bordered">
+    <thead class="table-light">
+      <tr>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Credits</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+        <tr>
+          <td>{{ user.username }}</td>
+          <td>{{ user.email }}</td>
+          <td>${{ '%.2f' | format(user.credits) }}</td>
+          <td>
+            <!-- Add Credits Modal Trigger -->
+            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#creditModal{{ user.id }}">
+              Add Credits
+            </button>
+
+            <a href="{{ url_for('librarian.view_user_purchases', user_id=user.id) }}" class="btn btn-sm btn-info">
+              View Purchases
+            </a>
+
+            <a href="{{ url_for('librarian.view_user_borrow_history', user_id=user.id) }}" class="btn btn-sm btn-warning">
+              View Borrows
+            </a>
+          </td>
+        </tr>
+
+        <!-- Credit Modal -->
+        <div class="modal fade" id="creditModal{{ user.id }}" tabindex="-1" aria-labelledby="creditModalLabel{{ user.id }}" aria-hidden="true">
+          <div class="modal-dialog">
+            <form method="POST" action="{{ url_for('librarian.add_credits', user_id=user.id) }}">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Add Credits to {{ user.username }}</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="mb-3">
+                    <label for="amount{{ user.id }}" class="form-label">Amount ($)</label>
+                    <input type="number" class="form-control" min="1" step="0.01" name="amount" required>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <button class="btn btn-success" type="submit">Add</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

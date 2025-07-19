@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Librarian Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+
+  <!-- Monthly Sales Summary -->
+  <div class="mb-5 text-center">
+    <h2>📊 Monthly Sales Summary</h2>
+    <p class="lead">
+      Total Books Sold: <strong>{{ total_books_sold }}</strong> |
+      Total Revenue: <strong>${{ '%.2f'|format(total_sales_amount) }}</strong>
+    </p>
+  </div>
+
+  <!-- Dashboard Buttons -->
+  <div class="row g-4 text-center">
+    <div class="col-md-4">
+      <a href="{{ url_for('librarian.view_available_books') }}" class="btn btn-primary w-100 p-3">
+        📚 View Available Books
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="{{ url_for('librarian.registered_users') }}" class="btn btn-secondary w-100 p-3">
+        👥 Registered Users
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="{{ url_for('librarian.add_book') }}" class="btn btn-success w-100 p-3">
+        ➕ Add New Book
+      </a>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

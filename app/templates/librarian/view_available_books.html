@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block title %}Available Books{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4">Available Books (Librarian View)</h2>
+  <div class="row g-4">
+    {% for book in books %}
+      {% set total = book.copies|length %}
+      {% set available = book.copies|selectattr('status', 'equalto', 'available')|list|length %}
+
+      <div class="col-sm-6 col-md-4 col-lg-3">
+        <div class="card h-100 shadow-sm">
+          {% if book.image %}
+            <img src="{{ url_for('static', filename='book_images/' ~ book.image) }}"
+                 class="card-img-top" style="height: 200px; object-fit: cover;" alt="{{ book.title }}">
+          {% else %}
+            <div class="d-flex align-items-center justify-content-center bg-secondary text-white"
+                 style="height: 200px;">
+              No Image Available
+            </div>
+          {% endif %}
+
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">{{ book.title }}</h5>
+            <p class="card-text small mb-2">{{ book.author }}</p>
+
+            {% if available == 0 %}
+              <span class="badge bg-danger mb-2">Out of Stock</span>
+            {% else %}
+              <span class="badge bg-success mb-2">Available: {{ available }}/{{ total }}</span>
+            {% endif %}
+
+            <ul class="list-unstyled small mb-3">
+              <li>Price: ${{ '%.2f'|format(book.price or 0) }}</li>
+              <li>Cost/Day: ${{ '%.2f'|format(book.cost_per_day or 0) }}</li>
+            </ul>
+
+            <div class="d-grid gap-2 mt-auto">
+              <a href="{{ url_for('librarian.edit_book', book_id=book.id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+
+              <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#addCopiesModal{{ book.id }}">
+                Add Copies
+              </button>
+
+              <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#removeCopiesModal{{ book.id }}">
+                Remove Copies
+              </button>
+
+              <a href="{{ url_for('librarian.view_book_librarian', book_id=book.id) }}" class="btn btn-sm btn-outline-secondary">View Book</a>
+
+
+              <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteBookModal{{ book.id }}">
+                Delete Book
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add Copies Modal -->
+      <div class="modal fade" id="addCopiesModal{{ book.id }}" tabindex="-1" aria-labelledby="addCopiesLabel{{ book.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+          <form method="POST" action="{{ url_for('librarian.add_copies', book_id=book.id) }}">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="addCopiesLabel{{ book.id }}">Add Copies to "{{ book.title }}"</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <p><strong>Current Copies:</strong> {{ total }}</p>
+                <div class="mb-3">
+                  <label for="numCopies{{ book.id }}" class="form-label">Number of copies to add</label>
+                  <input type="number" min="1" class="form-control" name="num_copies" id="numCopies{{ book.id }}" required>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Confirm</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Remove Copies Modal -->
+      <div class="modal fade" id="removeCopiesModal{{ book.id }}" tabindex="-1" aria-labelledby="removeCopiesLabel{{ book.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+          <form method="POST" action="{{ url_for('librarian.remove_copies', book_id=book.id) }}">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title text-warning" id="removeCopiesLabel{{ book.id }}">Remove Copies from "{{ book.title }}"</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <p><strong>Total Copies:</strong> {{ total }}</p>
+                <p><strong>Available Copies:</strong> {{ available }}</p>
+                <div class="mb-3">
+                  <label for="removeCount{{ book.id }}" class="form-label">Number of copies to remove</label>
+                  <input type="number" name="num_copies" class="form-control" id="removeCount{{ book.id }}" min="1" required>
+                </div>
+                <small class="text-muted">Only available (not borrowed) copies will be removed.</small>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-warning">Confirm</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Delete Book Modal -->
+      <div class="modal fade" id="deleteBookModal{{ book.id }}" tabindex="-1" aria-labelledby="deleteBookLabel{{ book.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+          <form method="POST" action="{{ url_for('librarian.delete_book', book_id=book.id) }}">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title text-danger" id="deleteBookLabel{{ book.id }}">Delete "{{ book.title }}"?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                Are you sure you want to permanently delete this book and all associated records and image?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-danger">Confirm</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

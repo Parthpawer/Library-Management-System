@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}My Books{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+
+  <!-- Borrowed Books Section -->
+  <h3>Borrowed Books</h3>
+  <div class="row g-4 mb-5">
+    {% for copy in borrowed_copies %}
+      <div class="col-sm-6 col-md-4 col-lg-3">
+        <div class="card h-100">
+          {% if copy.book.image %}
+            <img src="{{ url_for('static', filename='uploads/' ~ copy.book.image) }}"
+                 class="card-img-top" style="height: 200px; object-fit: cover;" alt="{{ copy.book.title }}">
+          {% else %}
+            <div class="d-flex align-items-center justify-content-center bg-secondary text-white"
+                 style="height: 200px;">
+              No Image Available
+            </div>
+          {% endif %}
+
+          <div class="card-body">
+            <h5 class="card-title">{{ copy.book.title }}</h5>
+            <p class="card-text small">
+              Borrowed On: {{ copy.borrowed_on.strftime('%Y-%m-%d') }}<br>
+              Due Date: {{ copy.due_date.strftime('%Y-%m-%d') }}
+            </p>
+          </div>
+
+          <div class="card-footer text-center">
+            <form action="{{ url_for('user.return_book', copy_id=copy.id) }}" method="POST" style="display:inline;">
+              <button type="submit" class="btn btn-danger btn-sm">Return Book</button>
+            </form>
+          
+            <form action="{{ url_for('user.buy_borrowed_book', copy_id=copy.id) }}" method="POST" style="display:inline;">
+              <button type="submit" class="btn btn-success btn-sm mt-2">Buy this Book</button>
+            </form>
+          </div>
+          
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Bought Books Section -->
+  <h3>Bought Books</h3>
+  <div class="row g-4">
+    {% for purchase in purchases %}
+      <div class="col-sm-6 col-md-4 col-lg-3">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">{{ purchase.book_title }}</h5>
+            <p class="card-text small">
+              Author: {{ purchase.book_author }}<br>
+              Price Paid: ${{ '%.2f'|format(purchase.price_paid) }}<br>
+              Bought On: {{ purchase.bought_on.strftime('%Y-%m-%d') }}
+            </p>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}

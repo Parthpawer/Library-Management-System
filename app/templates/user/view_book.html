@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ book.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-5">
+      {% if book.image %}
+        <img src="{{ url_for('static', filename='uploads/' ~ book.image) }}"
+             class="img-fluid rounded" alt="{{ book.title }}">
+      {% else %}
+        <div class="d-flex align-items-center justify-content-center bg-secondary text-white rounded"
+             style="height: 300px;">
+          No Image Available
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="col-md-7">
+      <h2>{{ book.title }}</h2>
+      <h5 class="text-muted">{{ book.author }}</h5>
+
+      <ul class="list-unstyled mt-3">
+        <li><strong>Publisher:</strong> {{ book.publisher }}</li>
+        <li><strong>ISBN:</strong> {{ book.isbn }}</li>
+        <li><strong>Price:</strong> ${{ '%.2f'|format(book.price or 0) }}</li>
+        <li><strong>Cost per Day:</strong> ${{ '%.2f'|format(book.cost_per_day or 0) }}</li>
+        <li>
+          {% if available_count > 0 %}
+            <span class="badge bg-success">Available: {{ available_count }} copies</span>
+          {% else %}
+            <span class="badge bg-danger">Currently out of stock</span>
+          {% endif %}
+        </li>
+      </ul>
+
+      <p class="mt-4">{{ book.description }}</p>
+
+      <!-- Action Buttons -->
+      <div class="d-flex gap-3 mt-4">
+        {% if available_count > 0 %}
+          <a href="{{ url_for('user.issue_book', book_id=book.id) }}" class="btn btn-primary">
+            Issue this Book
+          </a>
+        {% else %}
+          <button class="btn btn-secondary" disabled>Issue (Out of Stock)</button>
+        {% endif %}
+
+        <a href="{{ url_for('user.buy_book', book_id=book.id) }}" class="btn btn-success">
+          Buy this Book
+        </a>
+      </div>
+
+      <!-- Comment Form -->
+<div class="mt-4">
+  <h5>Leave a Comment</h5>
+  <form method="POST">
+    <div class="mb-3">
+      <textarea name="comment" class="form-control" rows="3" placeholder="Write your comment here..." required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Post Comment</button>
+  </form>
+</div>
+
+<!-- Display Comments -->
+<div class="mt-4">
+  <h5>Comments ({{ comments|length }})</h5>
+  {% for comment in comments %}
+    <div class="border rounded p-3 mb-2">
+      <strong>{{ comment.user.username }}</strong>
+      <small class="text-muted float-end">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+      <p class="mb-0 mt-1">{{ comment.content }}</p>
+    </div>
+  {% else %}
+    <p class="text-muted">No comments yet. Be the first to comment!</p>
+  {% endfor %}
+</div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Admin Dashboard</h2>
+
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="card border-primary">
+                <div class="card-body">
+                    <h5 class="card-title">View All Users</h5>
+                    <p class="card-text">See all registered users and their details.</p>
+                    <a href="{{ url_for('admin.admin_view_users') }}" class="btn btn-outline-primary">View Users</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card border-success">
+                <div class="card-body">
+                    <h5 class="card-title">View All Books</h5>
+                    <p class="card-text">See details of all books in the library.</p>
+                    <a href="{{ url_for('admin.admin_view_books') }}" class="btn btn-outline-success">View Books</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-success">
+                <div class="card-body">
+                    <h5 class="card-title">Add librarian</h5>
+                    <p class="card-text">Add more librarians</p>
+                    <a href="{{ url_for('admin.add_librarian') }}" class="btn btn-outline-primary">Add Librarian</a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
