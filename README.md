@@ -68,7 +68,7 @@ Follow these steps to get the project running on your local machine.
 Clone the project to your local machine.
 
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/Parthpawer/Library-Management-System.git
 cd library_project
 ```
 
